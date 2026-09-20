@@ -1,0 +1,3963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LogicVault — Programmable Logic Circuit Repository</title>
+
+<style>
+:root {
+    --bg: #080c16;
+    --panel: #101725;
+    --panel2: #141c2d;
+    --border: #263249;
+    --text: #f5f7fb;
+    --muted: #8995ad;
+    --accent: #6d8cff;
+    --accent2: #8b6cff;
+    --green: #35d07f;
+    --red: #ff6577;
+    --yellow: #f4c95d;
+    --shadow: 0 18px 50px rgba(0,0,0,.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at 70% -10%, rgba(109,140,255,.13), transparent 35%),
+        radial-gradient(circle at 20% 30%, rgba(139,108,255,.07), transparent 30%),
+        var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                 BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 245px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(10,15,27,.96);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    z-index: 10;
+}
+
+.main {
+    margin-left: 245px;
+    width: calc(100% - 245px);
+    min-height: 100vh;
+}
+
+.content {
+    max-width: 1450px;
+    margin: auto;
+    padding: 30px 34px 70px;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 4px 10px 28px;
+}
+
+.logo-mark {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    font-weight: 900;
+    font-size: 20px;
+    box-shadow: 0 8px 25px rgba(109,140,255,.25);
+}
+
+.logo-text strong {
+    display: block;
+    font-size: 16px;
+}
+
+.logo-text span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.nav-title {
+    color: #58657d;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    padding: 12px 12px 8px;
+    text-transform: uppercase;
+}
+
+.nav button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin: 3px 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: #9da8bd;
+    text-align: left;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.nav button:hover,
+.nav button.active {
+    background: #151e32;
+    border-color: #25324c;
+    color: white;
+}
+
+.nav-icon {
+    width: 22px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.sidebar-bottom {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+}
+
+.course-card {
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #0e1525;
+}
+
+.course-card small {
+    color: var(--muted);
+}
+
+.course-card strong {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+    height: 72px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,12,22,.76);
+    backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 34px;
+    position: sticky;
+    top: 0;
+    z-index: 8;
+}
+
+.breadcrumb {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.breadcrumb strong {
+    color: white;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.online {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #1f5639;
+    background: #10291d;
+    color: #68e89b;
+    border-radius: 30px;
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px rgba(53,208,127,.7);
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.hero {
+    padding: 10px 0 25px;
+}
+
+.eyebrow {
+    color: #8295ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-size: 35px;
+    line-height: 1.15;
+    margin: 8px 0;
+}
+
+.hero p {
+    color: var(--muted);
+    max-width: 720px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.card {
+    background: linear-gradient(145deg, rgba(18,26,43,.98), rgba(13,19,32,.98));
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+}
+
+.stat {
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(109,140,255,.07);
+    right: -30px;
+    top: -30px;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.stat-note {
+    color: #6f7b92;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1.35fr .65fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.section-card {
+    padding: 22px;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.section-head h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.section-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+    font-family: inherit;
+}
+
+.btn {
+    border: 1px solid #34425f;
+    background: #182239;
+    color: white;
+    border-radius: 9px;
+    padding: 9px 13px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn:hover {
+    background: #202d49;
+}
+
+.btn.primary {
+    border-color: #617cff;
+    background: linear-gradient(135deg, #5576ff, #725cff);
+}
+
+.btn.success {
+    border-color: #236b46;
+    background: #123323;
+    color: #73e6a0;
+}
+
+.btn.danger {
+    border-color: #71313c;
+    background: #30161b;
+    color: #ff8794;
+}
+
+/* =========================================================
+   CIRCUIT CARDS
+========================================================= */
+
+.circuit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+}
+
+.circuit-card {
+    border: 1px solid var(--border);
+    background: #0d1423;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.circuit-card:hover {
+    border-color: #526487;
+    transform: translateY(-2px);
+}
+
+.circuit-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.circuit-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    background: #18243d;
+    color: #9eafff;
+}
+
+.circuit-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 13px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    padding: 5px 8px;
+    background: #151d30;
+    border: 1px solid #25304a;
+    border-radius: 6px;
+    color: #8f9bb1;
+    font-size: 10px;
+}
+
+/* =========================================================
+   VISUAL DIGITAL LOGIC SIMULATOR
+========================================================= */
+
+.circuit-workspace {
+    background: #080d1a;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
+    margin-bottom: 22px;
+}
+
+.circuit-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 20px;
+    background: rgba(13, 20, 36, 0.94);
+    border-bottom: 1px solid #1e293b;
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.toolbar-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.toolbar-item label {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+}
+
+.circuit-select {
+    min-width: 190px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #2e3e58;
+    background: #0a1120;
+    color: #f8fafc;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.equation-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(10, 16, 29, 0.85);
+    border: 1px solid #25334c;
+    border-radius: 8px;
+    padding: 7px 14px;
+}
+
+.equation-label {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.equation-text {
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.auto-sim-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+    margin-left: 6px;
+}
+
+.auto-sim-label input {
+    width: auto;
+    cursor: pointer;
+}
+
+.canvas-subbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 20px;
+    background: #090e1c;
+    border-bottom: 1px solid #192336;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.subbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.info-tag strong {
+    color: #cbd5e1;
+}
+
+.info-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(53, 208, 127, 0.8);
+    margin-right: 4px;
+}
+
+.circuit-canvas-wrapper {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 10px;
+    min-height: 400px;
+    background-color: #060a15;
+    background-image:
+        radial-gradient(circle, rgba(100, 140, 255, 0.11) 1.2px, transparent 1.2px),
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 24px 24px, 120px 120px, 120px 120px;
+}
+
+#circuitSvg {
+    display: block;
+    width: 100%;
+    min-width: 820px;
+    max-width: 1020px;
+    height: auto;
+    user-select: none;
+}
+
+/* Wires */
+.circuit-wire {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.circuit-wire.wire-low {
+    stroke: #25334c;
+    stroke-width: 2.8px;
+    opacity: 0.85;
+}
+
+.circuit-wire.wire-high {
+    stroke: #00f0ff;
+    stroke-width: 3.8px;
+    filter: drop-shadow(0 0 7px rgba(0, 240, 255, 0.85));
+}
+
+.circuit-wire.wire-pulse {
+    stroke: #ffffff;
+    stroke-width: 1.8px;
+    stroke-dasharray: 8 16;
+    animation: wireFlowAnim 0.75s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes wireFlowAnim {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+}
+
+.junction-point {
+    transition: all 0.2s ease;
+}
+
+.junction-point.junction-low {
+    fill: #334155;
+    stroke: #1e293b;
+    stroke-width: 1.8px;
+}
+
+.junction-point.junction-high {
+    fill: #00f0ff;
+    stroke: #ffffff;
+    stroke-width: 2px;
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.95));
+}
+
+/* Gates */
+.gate-group {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.gate-group .gate-body {
+    fill: rgba(14, 21, 37, 0.95);
+    stroke: #334460;
+    stroke-width: 2px;
+    transition: stroke 0.2s ease, filter 0.2s ease, stroke-width 0.2s ease;
+}
+
+.gate-group:hover .gate-body {
+    stroke: #38bdf8;
+    stroke-width: 2.4px;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
+}
+
+.gate-group.selected .gate-body {
+    stroke: #00f0ff;
+    stroke-width: 2.8px;
+    filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.9));
+}
+
+.gate-label-main {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 11px;
+    font-weight: 800;
+    fill: #f1f5f9;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.gate-label-sub {
+    font-size: 9.5px;
+    font-weight: 600;
+    fill: #64748b;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.gate-badge-text {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 9px;
+    font-weight: 800;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+/* Three Column Controls & State Grid */
+.sim-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1.25fr;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+@media(max-width: 1100px) {
+    .sim-controls-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Input Switches */
+.switches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.switch-presets {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.preset-btn {
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid #27364e;
+    background: #0d1525;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.preset-btn:hover {
+    background: #162238;
+    color: white;
+}
+
+.switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    background: #0b1220;
+    border: 1px solid #1c283d;
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.switch-row:hover {
+    border-color: #2b3e5c;
+}
+
+.switch-label-col {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.switch-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 800;
+    color: #f1f5f9;
+}
+
+.switch-role {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.toggle-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    width: 96px;
+    height: 36px;
+    border-radius: 18px;
+    background: #141d2d;
+    border: 1px solid #29384e;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    padding: 3px;
+    transition: all 0.2s ease;
+}
+
+.toggle-switch-btn.is-on {
+    background: rgba(53, 208, 127, 0.15);
+    border-color: #35d07f;
+    box-shadow: 0 0 14px rgba(53, 208, 127, 0.3);
+}
+
+.toggle-switch-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #64748b;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+}
+
+.toggle-switch-btn.is-on .toggle-switch-thumb {
+    transform: translateX(58px);
+    background: #35d07f;
+    box-shadow: 0 0 10px #35d07f;
+}
+
+.toggle-switch-text {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.toggle-switch-btn:not(.is-on) .toggle-switch-text {
+    right: 12px;
+    color: #64748b;
+}
+
+.toggle-switch-btn.is-on .toggle-switch-text {
+    left: 12px;
+    color: #35d07f;
+}
+
+/* Gate Inspector */
+.inspector-card-body {
+    min-height: 210px;
+}
+
+.inspector-empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.inspector-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 12px;
+}
+
+.inspector-chip {
+    padding: 8px 10px;
+    background: #09101d;
+    border: 1px solid #1c273a;
+    border-radius: 8px;
+}
+
+.inspector-chip small {
+    display: block;
+    font-size: 9.5px;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+.inspector-chip strong {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #38bdf8;
+    margin-top: 2px;
+}
+
+.inspector-formula {
+    padding: 9px 12px;
+    background: #080d19;
+    border: 1px solid #22324b;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #a5b4fc;
+    margin-bottom: 12px;
+}
+
+.mini-table-wrap table {
+    width: 100%;
+    font-size: 11px;
+}
+
+.mini-table-wrap th {
+    padding: 6px 8px;
+    font-size: 10px;
+}
+
+.mini-table-wrap td {
+    padding: 6px 8px;
+}
+
+tr.active-gate-row {
+    background: rgba(0, 240, 255, 0.14) !important;
+    outline: 1px solid #00f0ff;
+}
+
+/* Simulation State Panel */
+.state-category-title {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin: 12px 0 7px;
+}
+
+.state-category-title:first-child {
+    margin-top: 0;
+}
+
+.signal-chips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 8px;
+}
+
+.sim-chip {
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1px solid #1c273c;
+    background: #0a1120;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+}
+
+.sim-chip.is-high {
+    border-color: rgba(53, 208, 127, 0.45);
+    background: rgba(53, 208, 127, 0.09);
+    box-shadow: 0 0 10px rgba(53, 208, 127, 0.18);
+}
+
+.sim-chip-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.sim-chip.is-high .sim-chip-name {
+    color: #e2e8f0;
+}
+
+.sim-chip-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 800;
+    color: #64748b;
+}
+
+.sim-chip.is-high .sim-chip-val {
+    color: #35d07f;
+}
+
+/* Synchronized Truth Table */
+tr.active-truth-row {
+    background: rgba(0, 240, 255, 0.14) !important;
+    outline: 1px solid #00f0ff;
+    font-weight: 800;
+}
+
+tr.active-truth-row td {
+    color: #ffffff !important;
+}
+
+tr.truth-interactive-row {
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+tr.truth-interactive-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.truth-active-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #00f0ff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(0, 240, 255, 0.18);
+}
+
+.truth-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+}
+
+.legend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+}
+
+.legend-chip.active-chip {
+    color: #00f0ff;
+    font-weight: 700;
+}
+
+/* =========================================================
+   CIRCUIT FLOW
+========================================================= */
+
+.flow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.flow-node {
+    padding: 11px 15px;
+    background: #172239;
+    border: 1px solid #30405e;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.flow-node.gate {
+    background: #211b3b;
+    border-color: #463d73;
+    color: #b9aeff;
+}
+
+.arrow {
+    color: #586781;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 11px 14px;
+    text-align: center;
+    border-bottom: 1px solid #253149;
+    font-size: 12px;
+}
+
+th {
+    background: #151e31;
+    color: #aeb9ce;
+    font-size: 11px;
+}
+
+td {
+    color: #e2e7f0;
+}
+
+.bit-one {
+    color: #6fe39a;
+    font-weight: 800;
+}
+
+.bit-zero {
+    color: #8a95a9;
+    font-weight: 700;
+}
+
+/* =========================================================
+   TEST CASES
+========================================================= */
+
+.test-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.test-box {
+    padding: 18px;
+    border-radius: 11px;
+    background: #0d1524;
+    border: 1px solid var(--border);
+}
+
+.test-box strong {
+    font-size: 25px;
+}
+
+.test-box span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.pass {
+    color: var(--green);
+}
+
+.fail {
+    color: var(--red);
+}
+
+/* =========================================================
+   REPOSITORY LIST
+========================================================= */
+
+.repo-list {
+    display: grid;
+    gap: 10px;
+}
+
+.repo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid var(--border);
+    background: #0c1321;
+    border-radius: 10px;
+}
+
+.repo-item strong {
+    font-size: 13px;
+}
+
+.repo-item small {
+    color: var(--muted);
+}
+
+/* =========================================================
+   JSON
+========================================================= */
+
+pre {
+    margin: 0;
+    padding: 16px;
+    border-radius: 10px;
+    background: #070b13;
+    border: 1px solid #1d273b;
+    color: #aebbd1;
+    font-size: 11px;
+    line-height: 1.6;
+    overflow: auto;
+    max-height: 420px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width: 1000px) {
+    .sidebar {
+        width: 72px;
+    }
+
+    .logo-text,
+    .nav-title,
+    .nav button span:not(.nav-icon),
+    .course-card {
+        display: none;
+    }
+
+    .logo {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .nav button {
+        justify-content: center;
+    }
+
+    .main {
+        margin-left: 72px;
+        width: calc(100% - 72px);
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .two-col,
+    .simulator-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 650px) {
+    .content {
+        padding: 22px 15px;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .stats,
+    .three-col,
+    .circuit-grid,
+    .test-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 27px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ======================================================
+     SIDEBAR
+====================================================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-mark">⚡</div>
+
+        <div class="logo-text">
+            <strong>LogicVault</strong>
+            <span>Circuit Repository</span>
+        </div>
+    </div>
+
+    <div class="nav-title">Workspace</div>
+
+    <nav class="nav">
+
+        <button class="active" onclick="showPage('dashboard', this)">
+            <span class="nav-icon">▦</span>
+            <span>Dashboard</span>
+        </button>
+
+        <button onclick="showPage('repository', this)">
+            <span class="nav-icon">▣</span>
+            <span>Repository</span>
+        </button>
+
+        <button onclick="showPage('simulator', this)">
+            <span class="nav-icon">▶</span>
+            <span>Simulator</span>
+        </button>
+
+        <button onclick="showPage('truth', this)">
+            <span class="nav-icon">▤</span>
+            <span>Truth Tables</span>
+        </button>
+
+        <button onclick="showPage('tests', this)">
+            <span class="nav-icon">✓</span>
+            <span>Test Cases</span>
+        </button>
+
+    </nav>
+
+    <div class="nav-title">Information</div>
+
+    <nav class="nav">
+
+        <button onclick="showPage('architecture', this)">
+            <span class="nav-icon">◇</span>
+            <span>Architecture</span>
+        </button>
+
+        <button onclick="showPage('about', this)">
+            <span class="nav-icon">ⓘ</span>
+            <span>About Project</span>
+        </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+        <div class="course-card">
+            <small>Academic Project</small>
+            <strong>EC2201 · Unit IV</strong>
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ======================================================
+     MAIN
+====================================================== -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div class="breadcrumb">
+            EC2201 / <strong id="pageTitle">Dashboard</strong>
+        </div>
+
+        <div class="top-actions">
+
+            <div class="online" id="connectionStatus">
+                <span class="dot"></span>
+                Backend Online
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <div class="content">
+
+
+<!-- ======================================================
+     DASHBOARD
+====================================================== -->
+
+<section id="dashboard" class="page active">
+
+    <div class="hero">
+
+        <div class="eyebrow">Digital Logic Workspace</div>
+
+        <h1>Programmable Logic<br>Circuit Repository</h1>
+
+        <p>
+            Design, store, simulate and validate programmable
+            digital logic circuits using a reproducible software
+            model.
+        </p>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="card stat">
+            <div class="stat-label">Supported Logic Gates</div>
+            <div class="stat-value">7</div>
+            <div class="stat-note">AND · OR · NOT · NAND · NOR · XOR · XNOR</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-label">Sample Circuits</div>
+            <div class="stat-value" id="dashboardSamples">4</div>
+            <div class="stat-note">Reusable repository designs</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-label">Automated Tests</div>
+            <div class="stat-value">18</div>
+            <div class="stat-note">12 normal · 6 fault</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-label">System Status</div>
+            <div class="stat-value" id="dashboardStatus">READY</div>
+            <div class="stat-note">FastAPI backend connected</div>
+        </div>
+
+    </div>
+
+
+    <div class="two-col">
+
+        <div class="card section-card">
+
+            <div class="section-head">
+
+                <div>
+                    <h2>Sample Circuit Repository</h2>
+                    <p>Select a design to inspect and simulate.</p>
+                </div>
+
+                <button class="btn primary"
+                        onclick="showPageByName('repository')">
+                    Open Repository
+                </button>
+
+            </div>
+
+            <div class="circuit-grid" id="dashboardCircuits"></div>
+
+        </div>
+
+
+        <div class="card section-card">
+
+            <div class="section-head">
+                <div>
+                    <h2>System Pipeline</h2>
+                    <p>Core processing workflow</p>
+                </div>
+            </div>
+
+            <div class="flow">
+                <div class="flow-node">Input</div>
+                <div class="arrow">→</div>
+                <div class="flow-node gate">Gate</div>
+                <div class="arrow">→</div>
+                <div class="flow-node gate">Gate</div>
+                <div class="arrow">→</div>
+                <div class="flow-node">Output</div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div class="stat-label">Core Modules</div>
+
+                <div class="circuit-meta">
+                    <span class="chip">Schema</span>
+                    <span class="chip">Repository</span>
+                    <span class="chip">Simulator</span>
+                    <span class="chip">Truth Table</span>
+                    <span class="chip">Validator</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card section-card" style="margin-top:18px">
+
+        <div class="section-head">
+
+            <div>
+                <h2>Quick Actions</h2>
+                <p>Access the main project capabilities.</p>
+            </div>
+
+        </div>
+
+        <button class="btn primary"
+                onclick="showPageByName('repository')">
+            ▣ Browse Circuits
+        </button>
+
+        <button class="btn"
+                onclick="showPageByName('simulator')">
+            ▶ Launch Simulator
+        </button>
+
+        <button class="btn"
+                onclick="showPageByName('truth')">
+            ▤ Generate Truth Table
+        </button>
+
+        <button class="btn success"
+                onclick="saveSamples()">
+            💾 Save Sample Designs
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     REPOSITORY
+====================================================== -->
+
+<section id="repository" class="page">
+
+    <div class="hero">
+
+        <div class="eyebrow">Repository</div>
+
+        <h1>Circuit Library</h1>
+
+        <p>
+            Browse reusable digital circuit designs stored in
+            the programmable logic repository.
+        </p>
+
+    </div>
+
+
+    <div class="card section-card">
+
+        <div class="section-head">
+
+            <div>
+                <h2>Available Designs</h2>
+                <p id="repositoryCount">Loading...</p>
+            </div>
+
+            <button class="btn success" onclick="saveSamples()">
+                💾 Save All Samples
+            </button>
+
+        </div>
+
+        <div class="circuit-grid" id="repositoryCircuits"></div>
+
+    </div>
+
+
+    <div class="card section-card" style="margin-top:18px">
+
+        <div class="section-head">
+
+            <div>
+                <h2>Saved Repository</h2>
+                <p>Circuits currently stored as JSON designs.</p>
+            </div>
+
+            <button class="btn" onclick="loadRepository()">
+                ↻ Refresh
+            </button>
+
+        </div>
+
+        <div class="repo-list" id="repoList"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     SIMULATOR
+====================================================== -->
+
+<section id="simulator" class="page">
+
+    <div class="hero">
+        <div class="eyebrow">Real-Time Digital Logic Workbench</div>
+        <h1>Visual Logic Circuit Simulator</h1>
+        <p>
+            Interactive gate-level digital logic simulator. Toggle input switches to propagate signals in real-time
+            through standard IEEE logic gates, inspect intermediate states, and validate truth tables.
+        </p>
+    </div>
+
+    <!-- ======================================================
+         CIRCUIT WORKSPACE (CANVAS + CONTROLS)
+    ====================================================== -->
+    <div class="circuit-workspace">
+
+        <!-- Toolbar -->
+        <div class="circuit-toolbar">
+            <div class="toolbar-left">
+                <div class="toolbar-item">
+                    <label for="simCircuit">Circuit</label>
+                    <select id="simCircuit" class="circuit-select" onchange="selectSimulatorCircuit()">
+                        <option value="">Select circuit</option>
+                    </select>
+                </div>
+
+                <div class="equation-container" id="equationBox">
+                    <span class="equation-label">BOOLEAN LOGIC</span>
+                    <span class="equation-text" id="circuitEquations">--</span>
+                </div>
+            </div>
+
+            <div class="toolbar-right">
+                <button class="btn primary" onclick="runSimulation()" title="Recompute and pulse signals">
+                    ▶ Run Simulation
+                </button>
+                <button class="btn" onclick="resetSimulatorInputs()" title="Reset all inputs to 0 (LOW)">
+                    ↺ Reset
+                </button>
+                <button class="btn" onclick="invertSimulatorInputs()" title="Invert all inputs">
+                    ⚡ Invert
+                </button>
+                <label class="auto-sim-label" title="Automatically recompute signals when any switch is clicked">
+                    <input type="checkbox" id="autoSimToggle" checked onchange="toggleAutoSim(this.checked)">
+                    <span>Auto-Simulate</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Canvas Subbar -->
+        <div class="canvas-subbar">
+            <div class="subbar-left">
+                <div class="info-tag">
+                    <span class="info-dot"></span>
+                    <strong id="simActiveCircuitName">Circuit</strong>
+                </div>
+                <div class="info-tag">
+                    Status: <span id="simStatusBadge" style="color:#35d07f;font-weight:700">ONLINE · READY</span>
+                </div>
+                <div class="info-tag">
+                    <span id="simMetrics">0 Inputs · 0 Gates · 0 Outputs</span>
+                </div>
+            </div>
+            <div style="color:#94a3b8;font-size:11px">
+                💡 Click <strong>Switches</strong> to toggle signals (0=LOW, 1=HIGH) · Click any <strong>Gate</strong> to inspect logic
+            </div>
+        </div>
+
+        <!-- SVG Circuit Canvas -->
+        <div class="circuit-canvas-wrapper" id="circuitCanvasWrapper">
+            <svg id="circuitSvg" viewBox="0 0 960 450" preserveAspectRatio="xMidYMid meet">
+                <!-- SVG Defs & Content rendered dynamically -->
+            </svg>
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         THREE-COLUMN CONTROLS & INSPECTOR ROW
+    ====================================================== -->
+    <div class="sim-controls-grid">
+
+        <!-- Col 1: Interactive Input Switches -->
+        <div class="card section-card">
+            <div class="section-head">
+                <div>
+                    <h2>Input Switches</h2>
+                    <p>Toggle binary states (0=LOW, 1=HIGH)</p>
+                </div>
+                <div class="switch-presets">
+                    <button class="preset-btn" onclick="setPresetInputs(0)">All 0</button>
+                    <button class="preset-btn" onclick="setPresetInputs(1)">All 1</button>
+                </div>
+            </div>
+
+            <div id="simSwitchesContainer" class="switches-list">
+                <div style="color:#64748b;font-size:12px;text-align:center;padding:24px 0">
+                    Select a circuit to display input switches.
+                </div>
+            </div>
+        </div>
+
+        <!-- Col 2: Interactive Gate Inspector -->
+        <div class="card section-card">
+            <div class="section-head">
+                <div>
+                    <h2>Gate Inspector</h2>
+                    <p>Live signals & Boolean equation</p>
+                </div>
+                <span class="badge" id="inspectorBadge">INSPECTOR</span>
+            </div>
+
+            <div id="gateInspectorBody" class="inspector-card-body">
+                <div class="inspector-empty">
+                    <div style="font-size:24px;margin-bottom:8px">⎇</div>
+                    Click any logic gate symbol in the circuit diagram above to inspect its live inputs, output, and Boolean equation.
+                </div>
+            </div>
+        </div>
+
+        <!-- Col 3: Simulation State (Inputs -> Gates -> Outputs) -->
+        <div class="card section-card">
+            <div class="section-head">
+                <div>
+                    <h2>Simulation State</h2>
+                    <p>Live signal propagation tracking</p>
+                </div>
+            </div>
+
+            <div id="simulationStateWrapper">
+                <div class="state-category-title">INPUT STATES</div>
+                <div class="signal-chips-grid" id="inputStateChips"></div>
+
+                <div class="state-category-title">INTERMEDIATE GATE STATES</div>
+                <div class="signal-chips-grid" id="intermediateStateChips"></div>
+
+                <div class="state-category-title">FINAL OUTPUTS</div>
+                <div class="signal-chips-grid" id="outputStateChips"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SYNCHRONIZED TRUTH TABLE SECTION
+    ====================================================== -->
+    <div class="card section-card">
+        <div class="section-head">
+            <div>
+                <h2>Synchronized Truth Table</h2>
+                <p>Complete input/output combinations. The active row highlights the current switch state. Click any row to test.</p>
+            </div>
+            <div class="truth-legend">
+                <span class="legend-chip active-chip">● Current Switch State</span>
+                <span class="legend-chip"><strong style="color:var(--green)">1</strong> = HIGH</span>
+                <span class="legend-chip"><strong style="color:var(--muted)">0</strong> = LOW</span>
+            </div>
+        </div>
+
+        <div id="simTruthTableContent" class="table-wrap">
+            <div style="color:#64748b;font-size:12px;text-align:center;padding:28px 0">
+                Select a circuit to display its synchronized truth table.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ======================================================
+         CIRCUIT EXECUTION FLOW
+    ====================================================== -->
+    <div class="card section-card" style="margin-top:18px">
+        <div class="section-head">
+            <div>
+                <h2>Circuit Structure & Execution Flow</h2>
+                <p>Topological signal dependency pipeline</p>
+            </div>
+        </div>
+
+        <div id="circuitFlow">
+            Select a circuit to view its execution flow.
+        </div>
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     TRUTH TABLE
+====================================================== -->
+
+<section id="truth" class="page">
+
+    <div class="hero">
+
+        <div class="eyebrow">Validation</div>
+
+        <h1>Truth Table Generator</h1>
+
+        <p>
+            Generate every possible binary input combination and
+            calculate the corresponding circuit outputs.
+        </p>
+
+    </div>
+
+
+    <div class="card section-card">
+
+        <div class="section-head">
+
+            <div>
+                <h2>Truth Table Configuration</h2>
+                <p>Select a circuit to generate its complete table.</p>
+            </div>
+
+            <select id="truthCircuit"
+                    style="max-width:300px">
+            </select>
+
+            <button class="btn primary"
+                    onclick="generateTruthTable()">
+                Generate
+            </button>
+
+        </div>
+
+        <div id="truthResult">
+            Select a circuit and generate its truth table.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     TEST CASES
+====================================================== -->
+
+<section id="tests" class="page">
+
+    <div class="hero">
+
+        <div class="eyebrow">Quality Assurance</div>
+
+        <h1>Automated Test Cases</h1>
+
+        <p>
+            Reproducible verification of normal circuit behavior
+            and fault handling.
+        </p>
+
+    </div>
+
+
+    <div class="test-summary">
+
+        <div class="card test-box">
+            <strong class="pass">12</strong>
+            <span>Normal Tests Passed</span>
+        </div>
+
+        <div class="card test-box">
+            <strong class="pass">6</strong>
+            <span>Fault Tests Passed</span>
+        </div>
+
+        <div class="card test-box">
+            <strong class="pass">18/18</strong>
+            <span>Overall Tests Passed</span>
+        </div>
+
+    </div>
+
+
+    <div class="card section-card" style="margin-top:18px">
+
+        <div class="section-head">
+
+            <div>
+                <h2>Test Coverage</h2>
+                <p>Verified test categories from the automated test runner.</p>
+            </div>
+
+            <span class="badge">ALL TESTS PASSED</span>
+
+        </div>
+
+
+        <div class="repo-list">
+
+            <div class="repo-item">
+                <div>
+                    <strong>Basic Logic Gates</strong>
+                    <small>AND, OR, NOT, NAND, NOR, XOR, XNOR</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+            <div class="repo-item">
+                <div>
+                    <strong>Combined Circuits</strong>
+                    <small>Multiple gates connected through signals</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+            <div class="repo-item">
+                <div>
+                    <strong>Missing Input</strong>
+                    <small>Invalid circuit input detection</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+            <div class="repo-item">
+                <div>
+                    <strong>Invalid Digital Value</strong>
+                    <small>Only binary 0 and 1 accepted</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+            <div class="repo-item">
+                <div>
+                    <strong>Unknown Signal</strong>
+                    <small>Invalid signal reference detection</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+            <div class="repo-item">
+                <div>
+                    <strong>Unsupported Gate</strong>
+                    <small>Invalid gate type detection</small>
+                </div>
+                <span class="pass">PASS</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     ARCHITECTURE
+====================================================== -->
+
+<section id="architecture" class="page">
+
+    <div class="hero">
+
+        <div class="eyebrow">System Design</div>
+
+        <h1>Project Architecture</h1>
+
+        <p>
+            Modular architecture separating circuit logic,
+            repository storage, simulation, validation and API access.
+        </p>
+
+    </div>
+
+
+    <div class="card section-card">
+
+        <div class="flow">
+
+            <div class="flow-node">Web UI</div>
+            <div class="arrow">→</div>
+            <div class="flow-node">FastAPI</div>
+            <div class="arrow">→</div>
+            <div class="flow-node gate">Circuit Engine</div>
+            <div class="arrow">→</div>
+            <div class="flow-node gate">Simulator</div>
+            <div class="arrow">→</div>
+            <div class="flow-node">Results</div>
+
+        </div>
+
+    </div>
+
+
+    <div class="three-col">
+
+        <div class="card section-card">
+            <h2 style="font-size:15px">Circuit Layer</h2>
+            <p style="color:var(--muted);font-size:12px;line-height:1.6">
+                Defines circuit inputs, gates, signals and outputs.
+            </p>
+            <div class="circuit-meta">
+                <span class="chip">circuit.py</span>
+                <span class="chip">gates.py</span>
+            </div>
+        </div>
+
+        <div class="card section-card">
+            <h2 style="font-size:15px">Repository Layer</h2>
+            <p style="color:var(--muted);font-size:12px;line-height:1.6">
+                Stores and retrieves circuit designs using JSON.
+            </p>
+            <div class="circuit-meta">
+                <span class="chip">repository.py</span>
+                <span class="chip">JSON</span>
+            </div>
+        </div>
+
+        <div class="card section-card">
+            <h2 style="font-size:15px">Validation Layer</h2>
+            <p style="color:var(--muted);font-size:12px;line-height:1.6">
+                Generates truth tables and validates expected results.
+            </p>
+            <div class="circuit-meta">
+                <span class="chip">truth_table.py</span>
+                <span class="chip">validator.py</span>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card section-card" style="margin-top:18px">
+
+        <div class="section-head">
+            <div>
+                <h2>Technology Stack</h2>
+                <p>Tools used in the working prototype.</p>
+            </div>
+        </div>
+
+        <div class="circuit-meta">
+            <span class="chip">Python</span>
+            <span class="chip">FastAPI</span>
+            <span class="chip">Uvicorn</span>
+            <span class="chip">JSON</span>
+            <span class="chip">HTML</span>
+            <span class="chip">CSS</span>
+            <span class="chip">JavaScript</span>
+            <span class="chip">NumPy</span>
+            <span class="chip">Matplotlib</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     ABOUT
+====================================================== -->
+
+<section id="about" class="page">
+
+    <div class="hero">
+
+        <div class="eyebrow">Project Information</div>
+
+        <h1>About the Project</h1>
+
+        <p>
+            A software-based repository and simulation environment
+            for programmable digital logic circuits.
+        </p>
+
+    </div>
+
+
+    <div class="two-col">
+
+        <div class="card section-card">
+
+            <h2>Project Objective</h2>
+
+            <p style="
+                color:var(--muted);
+                line-height:1.8;
+                font-size:13px;
+            ">
+                The system provides a structured way to define,
+                save, load, simulate and validate programmable
+                logic circuits. The digital logic model forms
+                the core of the application, while the web
+                interface provides accessible visualization
+                and interaction.
+            </p>
+
+        </div>
+
+
+        <div class="card section-card">
+
+            <h2>Course</h2>
+
+            <p style="
+                color:var(--muted);
+                line-height:1.8;
+                font-size:13px;
+            ">
+                <strong style="color:white">
+                    EC2201
+                </strong><br>
+                Digital System Design and Microprocessor
+                <br><br>
+                <strong style="color:white">
+                    Unit IV
+                </strong><br>
+                Memory and Programmable Logic Devices
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card section-card" style="margin-top:18px">
+
+        <h2>Implemented Capabilities</h2>
+
+        <div class="circuit-meta">
+
+            <span class="chip">Circuit Schema</span>
+            <span class="chip">Logic Gates</span>
+            <span class="chip">Circuit Evaluation</span>
+            <span class="chip">Save / Load</span>
+            <span class="chip">Truth Tables</span>
+            <span class="chip">Validation</span>
+            <span class="chip">Simulation</span>
+            <span class="chip">Intermediate States</span>
+            <span class="chip">Sample Designs</span>
+            <span class="chip">Automated Testing</span>
+            <span class="chip">REST API</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+    </div>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   API
+========================================================= */
+
+const API = "http://127.0.0.1:8000";
+
+let samples = [];
+let selectedSimulator = null;
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const pageNames = {
+    dashboard: "Dashboard",
+    repository: "Repository",
+    simulator: "Simulator",
+    truth: "Truth Tables",
+    tests: "Test Cases",
+    architecture: "Architecture",
+    about: "About Project"
+};
+
+
+function showPage(name, button) {
+
+    document.querySelectorAll(".page")
+        .forEach(page => page.classList.remove("active"));
+
+    const page = document.getElementById(name);
+
+    if (page) {
+        page.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav button")
+        .forEach(btn => btn.classList.remove("active"));
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+    document.getElementById("pageTitle").textContent =
+        pageNames[name] || name;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    if (name === "repository") {
+        loadRepository();
+    }
+
+    if (name === "simulator") {
+        populateSimulatorSelect();
+    }
+
+    if (name === "truth") {
+        populateTruthSelect();
+    }
+}
+
+
+function showPageByName(name) {
+
+    const buttons = document.querySelectorAll(".nav button");
+
+    let targetButton = null;
+
+    buttons.forEach(button => {
+
+        const text = button.innerText.toLowerCase();
+
+        if (
+            (name === "repository" && text.includes("repository")) ||
+            (name === "simulator" && text.includes("simulator")) ||
+            (name === "truth" && text.includes("truth")) ||
+            (name === "tests" && text.includes("test")) ||
+            (name === "architecture" && text.includes("architecture")) ||
+            (name === "about" && text.includes("about")) ||
+            (name === "dashboard" && text.includes("dashboard"))
+        ) {
+            targetButton = button;
+        }
+
+    });
+
+    showPage(name, targetButton);
+}
+
+
+/* =========================================================
+   HEALTH
+========================================================= */
+
+async function checkHealth() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/api/health`);
+
+        if (!response.ok) {
+            throw new Error("Backend error");
+        }
+
+        await response.json();
+
+        document.getElementById("connectionStatus").innerHTML =
+            `<span class="dot"></span> Backend Online`;
+
+        document.getElementById("dashboardStatus").textContent =
+            "READY";
+
+    } catch (error) {
+
+        document.getElementById("connectionStatus").innerHTML =
+            `<span class="dot"
+                   style="background:#ff6577;
+                          box-shadow:none"></span>
+             Backend Offline`;
+
+        document.getElementById("dashboardStatus").textContent =
+            "OFFLINE";
+    }
+}
+
+
+/* =========================================================
+   LOAD SAMPLE CIRCUITS
+========================================================= */
+
+async function loadSamples() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/api/samples`);
+
+        const data =
+            await response.json();
+
+        samples = data.samples || [];
+
+        document.getElementById("dashboardSamples").textContent =
+            samples.length;
+
+        renderDashboardCircuits();
+
+        renderRepositoryCircuits();
+
+        populateSimulatorSelect();
+
+        populateTruthSelect();
+
+    } catch (error) {
+
+        console.error("Could not load samples:", error);
+
+    }
+}
+
+
+/* =========================================================
+   CIRCUIT CARD
+========================================================= */
+
+function circuitCard(circuit) {
+
+    const card =
+        document.createElement("div");
+
+    card.className = "circuit-card";
+
+    card.onclick = () => openCircuit(circuit);
+
+    card.innerHTML = `
+
+        <div class="circuit-top">
+
+            <div class="circuit-name">
+                ${formatName(circuit.name)}
+            </div>
+
+            <span class="badge">
+                LOGIC
+            </span>
+
+        </div>
+
+        <div class="circuit-meta">
+
+            <span class="chip">
+                ${circuit.inputs.length} Inputs
+            </span>
+
+            <span class="chip">
+                ${circuit.gates.length} Gates
+            </span>
+
+            <span class="chip">
+                ${circuit.outputs.length} Outputs
+            </span>
+
+        </div>
+    `;
+
+    return card;
+}
+
+
+function formatName(name) {
+
+    return name
+        .replaceAll("_", " ")
+        .replace("2 to 1", "2:1");
+}
+
+
+/* =========================================================
+   DASHBOARD CIRCUITS
+========================================================= */
+
+function renderDashboardCircuits() {
+
+    const container =
+        document.getElementById("dashboardCircuits");
+
+    container.innerHTML = "";
+
+    samples.forEach(circuit => {
+
+        container.appendChild(
+            circuitCard(circuit)
+        );
+
+    });
+}
+
+
+/* =========================================================
+   REPOSITORY
+========================================================= */
+
+function renderRepositoryCircuits() {
+
+    const container =
+        document.getElementById("repositoryCircuits");
+
+    container.innerHTML = "";
+
+    samples.forEach(circuit => {
+
+        container.appendChild(
+            circuitCard(circuit)
+        );
+
+    });
+
+    document.getElementById("repositoryCount").textContent =
+        `${samples.length} sample designs available`;
+}
+
+
+async function loadRepository() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/api/circuits`);
+
+        const data =
+            await response.json();
+
+        const list =
+            document.getElementById("repoList");
+
+        list.innerHTML = "";
+
+        const circuits =
+            data.circuits || [];
+
+        if (!circuits.length) {
+
+            list.innerHTML = `
+                <div style="
+                    color:#68758d;
+                    padding:20px;
+                    text-align:center;
+                ">
+                    No saved circuits yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        circuits.forEach(name => {
+
+            const item =
+                document.createElement("div");
+
+            item.className = "repo-item";
+
+            item.innerHTML = `
+                <div>
+                    <strong>${formatName(name)}</strong>
+                    <small>JSON circuit design</small>
+                </div>
+
+                <button class="btn"
+                        onclick="loadSavedCircuit('${name}')">
+                    Load
+                </button>
+            `;
+
+            list.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+
+/* =========================================================
+   SIMULATOR STATE & LOGIC ENGINE
+========================================================= */
+
+const CIRCUIT_EQUATIONS = {
+    "AND_Gate": "OUT = A · B",
+    "Half_Adder": "SUM = A ⊕ B  |  CARRY = A · B",
+    "Full_Adder": "SUM = A ⊕ B ⊕ CIN  |  COUT = A·B + CIN·(A ⊕ B)",
+    "MUX_2_to_1": "OUT = (D0 · S') + (D1 · S)"
+};
+
+let currentInputs = {};
+let selectedGateId = null;
+let isPulseActive = true;
+let autoSimulate = true;
+
+
+/* =========================================================
+   CLIENT-SIDE EVALUATION ENGINE
+========================================================= */
+
+function evaluateCircuitLocally(circuit, inputs) {
+    if (!circuit) {
+        return { inputs: {}, intermediate: {}, outputs: {}, signals: {} };
+    }
+
+    const signals = { ...inputs };
+    const intermediate = {};
+
+    if (Array.isArray(circuit.gates)) {
+        circuit.gates.forEach(gate => {
+            const gateInputs = (gate.inputs || []).map(src => {
+                return (signals[src] !== undefined) ? Number(signals[src]) : 0;
+            });
+
+            const type = (gate.type || "").toUpperCase();
+            const a = gateInputs[0] !== undefined ? gateInputs[0] : 0;
+            const b = gateInputs[1] !== undefined ? gateInputs[1] : 0;
+
+            let outVal = 0;
+            switch (type) {
+                case "AND":
+                    outVal = a & b;
+                    break;
+                case "OR":
+                    outVal = a | b;
+                    break;
+                case "NOT":
+                    outVal = 1 - a;
+                    break;
+                case "NAND":
+                    outVal = 1 - (a & b);
+                    break;
+                case "NOR":
+                    outVal = 1 - (a | b);
+                    break;
+                case "XOR":
+                    outVal = a ^ b;
+                    break;
+                case "XNOR":
+                    outVal = 1 - (a ^ b);
+                    break;
+                default:
+                    outVal = 0;
+            }
+
+            signals[gate.id] = outVal;
+            intermediate[gate.id] = outVal;
+        });
+    }
+
+    const outputs = {};
+    if (Array.isArray(circuit.outputs)) {
+        circuit.outputs.forEach(out => {
+            outputs[out.name] = (signals[out.source] !== undefined) ? Number(signals[out.source]) : 0;
+        });
+    }
+
+    return {
+        inputs: { ...inputs },
+        intermediate,
+        outputs,
+        signals
+    };
+}
+
+
+/* =========================================================
+   OPEN CIRCUIT
+========================================================= */
+
+function openCircuit(circuit) {
+    selectedSimulator = circuit;
+    const select = document.getElementById("simCircuit");
+    if (select) {
+        select.value = samples.indexOf(circuit);
+    }
+
+    initCircuitInputs(circuit);
+    showPageByName("simulator");
+    renderVisualCircuit();
+}
+
+
+/* =========================================================
+   POPULATE SIMULATOR SELECT
+========================================================= */
+
+function populateSimulatorSelect() {
+    const select = document.getElementById("simCircuit");
+    if (!select) return;
+
+    const prevVal = select.value;
+    select.innerHTML = `<option value="">Select circuit</option>`;
+
+    samples.forEach((circuit, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = formatName(circuit.name);
+        select.appendChild(option);
+    });
+
+    if (selectedSimulator) {
+        const idx = samples.indexOf(selectedSimulator);
+        if (idx >= 0) select.value = idx;
+    } else if (samples.length > 0) {
+        // Default to Full Adder if available, else first sample
+        const fullAdderIdx = samples.findIndex(c => c.name === "Full_Adder");
+        const defaultIdx = fullAdderIdx >= 0 ? fullAdderIdx : 0;
+        select.value = defaultIdx;
+        selectedSimulator = samples[defaultIdx];
+        initCircuitInputs(selectedSimulator);
+        renderVisualCircuit();
+    }
+}
+
+
+function selectSimulatorCircuit() {
+    const select = document.getElementById("simCircuit");
+    const index = select ? select.value : "";
+
+    if (index === "" || !samples[Number(index)]) {
+        selectedSimulator = null;
+        currentInputs = {};
+        selectedGateId = null;
+        renderVisualCircuit();
+        return;
+    }
+
+    selectedSimulator = samples[Number(index)];
+    initCircuitInputs(selectedSimulator);
+    renderVisualCircuit();
+}
+
+
+function initCircuitInputs(circuit) {
+    currentInputs = {};
+    if (circuit && Array.isArray(circuit.inputs)) {
+        circuit.inputs.forEach(inp => {
+            currentInputs[inp] = 0;
+        });
+    }
+    selectedGateId = null;
+}
+
+
+/* =========================================================
+   CONTROLS & INPUT TOGGLES
+========================================================= */
+
+function toggleSimulatorInput(name) {
+    if (currentInputs[name] === undefined) {
+        currentInputs[name] = 0;
+    }
+    currentInputs[name] = currentInputs[name] === 1 ? 0 : 1;
+
+    if (autoSimulate) {
+        triggerPulseAnimation();
+        renderVisualCircuit();
+    } else {
+        renderInputSwitchesList();
+    }
+}
+
+
+function setPresetInputs(val) {
+    if (!selectedSimulator || !Array.isArray(selectedSimulator.inputs)) return;
+    selectedSimulator.inputs.forEach(name => {
+        currentInputs[name] = val;
+    });
+    triggerPulseAnimation();
+    renderVisualCircuit();
+}
+
+
+function resetSimulatorInputs() {
+    setPresetInputs(0);
+}
+
+
+function invertSimulatorInputs() {
+    if (!selectedSimulator || !Array.isArray(selectedSimulator.inputs)) return;
+    selectedSimulator.inputs.forEach(name => {
+        currentInputs[name] = currentInputs[name] === 1 ? 0 : 1;
+    });
+    triggerPulseAnimation();
+    renderVisualCircuit();
+}
+
+
+function toggleAutoSim(checked) {
+    autoSimulate = checked;
+}
+
+
+function triggerPulseAnimation() {
+    isPulseActive = true;
+}
+
+
+async function runSimulation() {
+    if (!selectedSimulator) {
+        alert("Select a circuit first.");
+        return;
+    }
+
+    triggerPulseAnimation();
+    renderVisualCircuit();
+
+    // Also synchronize with backend API if online
+    try {
+        const response = await fetch(`${API}/api/simulate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                circuit: selectedSimulator,
+                inputs: currentInputs
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const badge = document.getElementById("simStatusBadge");
+            if (badge) {
+                badge.textContent = "SYNCHRONIZED (FASTAPI)";
+                badge.style.color = "#35d07f";
+            }
+        }
+    } catch (e) {
+        // Fallback to local simulator
+        const badge = document.getElementById("simStatusBadge");
+        if (badge) {
+            badge.textContent = "LOCAL SIMULATOR";
+            badge.style.color = "#38bdf8";
+        }
+    }
+}
+
+
+function selectGateToInspect(gateId) {
+    if (selectedGateId === gateId) {
+        selectedGateId = null;
+    } else {
+        selectedGateId = gateId;
+    }
+    renderVisualCircuit();
+}
+
+
+/* =========================================================
+   SVG CIRCUIT CANVAS & SYMBOL DRAWING HELPERS
+========================================================= */
+
+function buildSvgDefs() {
+    return `
+    <defs>
+        <filter id="glow-high" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur" />
+            <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="glow-node" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+            <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <radialGradient id="led-on-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="35%" stop-color="#35d07f" />
+            <stop offset="85%" stop-color="#148348" />
+            <stop offset="100%" stop-color="#0b4827" />
+        </radialGradient>
+        <radialGradient id="led-off-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#475569" />
+            <stop offset="70%" stop-color="#1e293b" />
+            <stop offset="100%" stop-color="#0f172a" />
+        </radialGradient>
+    </defs>
+    `;
+}
+
+
+function drawOrthogonalWire(pts, val) {
+    if (!pts || pts.length < 2) return "";
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+
+    for (let i = 1; i < pts.length; i++) {
+        d += ` L ${pts[i][0]} ${pts[i][1]}`;
+    }
+
+    const baseClass = val === 1 ? "circuit-wire wire-high" : "circuit-wire wire-low";
+    let html = `<path d="${d}" class="${baseClass}" />`;
+
+    if (val === 1 && isPulseActive) {
+        html += `<path d="${d}" class="circuit-wire wire-pulse" />`;
+    }
+    return html;
+}
+
+
+function drawJunction(x, y, val) {
+    const cls = val === 1 ? "junction-point junction-high" : "junction-point junction-low";
+    return `<circle cx="${x}" cy="${y}" r="4.5" class="${cls}" />`;
+}
+
+
+function drawLogicGate(type, id, x, y, gateInputs, outVal, isSelected) {
+    const normType = (type || "").toUpperCase();
+    const in1 = gateInputs[0] !== undefined ? gateInputs[0] : 0;
+    const in2 = gateInputs[1] !== undefined ? gateInputs[1] : 0;
+
+    let bodyPath = "";
+    let extraPath = "";
+    let bubble = "";
+    let inPinsHtml = "";
+    let outPinHtml = "";
+
+    // Terminal Pin coordinates
+    const inPinX = x - 40;
+    const inPinY1 = y - 12;
+    const inPinY2 = y + 12;
+
+    if (normType === "NOT") {
+        inPinsHtml = `
+            <line x1="${inPinX}" y1="${y}" x2="${x - 22}" y2="${y}" class="circuit-wire ${in1 === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+            <circle cx="${inPinX}" cy="${y}" r="3.5" fill="${in1 === 1 ? '#00f0ff' : '#334155'}" />
+        `;
+        bodyPath = `M ${x - 22} ${y - 22} L ${x + 14} ${y} L ${x - 22} ${y + 22} Z`;
+        bubble = `<circle cx="${x + 18.5}" cy="${y}" r="4.5" class="gate-body" />`;
+        outPinHtml = `
+            <line x1="${x + 23}" y1="${y}" x2="${x + 40}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+            <circle cx="${x + 40}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+        `;
+    } else {
+        // 2-input gates
+        inPinsHtml = `
+            <line x1="${inPinX}" y1="${inPinY1}" x2="${x - 25}" y2="${inPinY1}" class="circuit-wire ${in1 === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+            <circle cx="${inPinX}" cy="${inPinY1}" r="3.5" fill="${in1 === 1 ? '#00f0ff' : '#334155'}" />
+            <line x1="${inPinX}" y1="${inPinY2}" x2="${x - 25}" y2="${inPinY2}" class="circuit-wire ${in2 === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+            <circle cx="${inPinX}" cy="${inPinY2}" r="3.5" fill="${in2 === 1 ? '#00f0ff' : '#334155'}" />
+        `;
+
+        if (normType === "AND" || normType === "NAND") {
+            bodyPath = `M ${x - 25} ${y - 24} L ${x} ${y - 24} A 24 24 0 0 1 ${x} ${y + 24} L ${x - 25} ${y + 24} Z`;
+            if (normType === "NAND") {
+                bubble = `<circle cx="${x + 28.5}" cy="${y}" r="4.5" class="gate-body" />`;
+                outPinHtml = `
+                    <line x1="${x + 33}" y1="${y}" x2="${x + 42}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 42}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            } else {
+                outPinHtml = `
+                    <line x1="${x + 24}" y1="${y}" x2="${x + 40}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 40}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            }
+        } else if (normType === "OR" || normType === "NOR") {
+            bodyPath = `M ${x - 25} ${y - 24} Q ${x + 8} ${y - 22} ${x + 26} ${y} Q ${x + 8} ${y + 22} ${x - 25} ${y + 24} Q ${x - 12} ${y} ${x - 25} ${y - 24} Z`;
+            if (normType === "NOR") {
+                bubble = `<circle cx="${x + 30.5}" cy="${y}" r="4.5" class="gate-body" />`;
+                outPinHtml = `
+                    <line x1="${x + 35}" y1="${y}" x2="${x + 44}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 44}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            } else {
+                outPinHtml = `
+                    <line x1="${x + 26}" y1="${y}" x2="${x + 40}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 40}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            }
+        } else if (normType === "XOR" || normType === "XNOR") {
+            extraPath = `<path d="M ${x - 33} ${y - 24} Q ${x - 19} ${y} ${x - 33} ${y + 24}" fill="none" stroke="${isSelected ? '#00f0ff' : '#334460'}" stroke-width="2.4" />`;
+            bodyPath = `M ${x - 24} ${y - 24} Q ${x + 8} ${y - 22} ${x + 26} ${y} Q ${x + 8} ${y + 22} ${x - 24} ${y + 24} Q ${x - 11} ${y} ${x - 24} ${y - 24} Z`;
+            if (normType === "XNOR") {
+                bubble = `<circle cx="${x + 30.5}" cy="${y}" r="4.5" class="gate-body" />`;
+                outPinHtml = `
+                    <line x1="${x + 35}" y1="${y}" x2="${x + 44}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 44}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            } else {
+                outPinHtml = `
+                    <line x1="${x + 26}" y1="${y}" x2="${x + 40}" y2="${y}" class="circuit-wire ${outVal === 1 ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+                    <circle cx="${x + 40}" cy="${y}" r="3.5" fill="${outVal === 1 ? '#00f0ff' : '#334155'}" />
+                `;
+            }
+        }
+    }
+
+    const badgeBg = outVal === 1 ? 'rgba(53, 208, 127, 0.22)' : 'rgba(100, 116, 139, 0.2)';
+    const badgeStroke = outVal === 1 ? '#35d07f' : '#475569';
+    const badgeTxt = outVal === 1 ? '#35d07f' : '#94a3b8';
+    const badgeVal = outVal === 1 ? '1 HIGH' : '0 LOW';
+
+    return `
+    <g class="gate-group ${isSelected ? 'selected' : ''}" onclick="selectGateToInspect('${id}')">
+        ${inPinsHtml}
+        ${extraPath}
+        <path d="${bodyPath}" class="gate-body" />
+        ${bubble}
+        ${outPinHtml}
+        
+        <!-- Live Output Badge -->
+        <rect x="${x - 21}" y="${y - 41}" width="42" height="15" rx="7.5" fill="${badgeBg}" stroke="${badgeStroke}" stroke-width="1.2" />
+        <text x="${x}" y="${y - 30}" class="gate-badge-text" fill="${badgeTxt}">${badgeVal}</text>
+        
+        <!-- Gate Identification Labels -->
+        <text x="${x}" y="${y + 37}" class="gate-label-main">${id}</text>
+        <text x="${x}" y="${y + 48}" class="gate-label-sub">${normType}</text>
+    </g>
+    `;
+}
+
+
+function drawSvgSwitch(name, x, y, val) {
+    const isHigh = val === 1;
+    const bg = isHigh ? 'rgba(53, 208, 127, 0.15)' : 'rgba(15, 23, 42, 0.95)';
+    const border = isHigh ? '#35d07f' : '#334155';
+    const knobX = isHigh ? x + 16 : x - 16;
+    const knobColor = isHigh ? '#35d07f' : '#64748b';
+    const txtColor = isHigh ? '#35d07f' : '#94a3b8';
+    const txtLabel = isHigh ? '1 HIGH' : '0 LOW';
+
+    return `
+    <g class="svg-switch-box" onclick="toggleSimulatorInput('${name}')">
+        <!-- Switch Body -->
+        <rect x="${x - 34}" y="${y - 17}" width="68" height="34" rx="17" fill="${bg}" stroke="${border}" stroke-width="2" />
+        <!-- Switch Knob -->
+        <circle cx="${knobX}" cy="${y}" r="11" fill="${knobColor}" filter="${isHigh ? 'url(#glow-high)' : 'none'}" />
+        <text x="${knobX}" y="${y + 3.5}" text-anchor="middle" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="900" fill="#ffffff">${val}</text>
+        
+        <!-- Input Name Label -->
+        <text x="${x}" y="${y - 24}" text-anchor="middle" font-size="12" font-family="'JetBrains Mono', monospace" font-weight="800" fill="#f8fafc">INPUT ${name}</text>
+        <text x="${x}" y="${y + 29}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono', monospace" font-weight="700" fill="${txtColor}">${txtLabel}</text>
+        
+        <!-- Connection Terminal Pin -->
+        <line x1="${x + 34}" y1="${y}" x2="${x + 48}" y2="${y}" class="circuit-wire ${isHigh ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+        <circle cx="${x + 48}" cy="${y}" r="3.5" fill="${isHigh ? '#00f0ff' : '#334155'}" />
+    </g>
+    `;
+}
+
+
+function drawSvgProbe(name, x, y, val) {
+    const isHigh = val === 1;
+    const border = isHigh ? '#35d07f' : '#2b3950';
+
+    return `
+    <g>
+        <!-- Lead Line from terminal pin -->
+        <line x1="${x - 22}" y1="${y}" x2="${x - 10}" y2="${y}" class="circuit-wire ${isHigh ? 'wire-high' : 'wire-low'}" stroke-width="2.5" />
+        <circle cx="${x - 22}" cy="${y}" r="3.5" fill="${isHigh ? '#00f0ff' : '#334155'}" />
+        
+        <!-- Probe Outer Box -->
+        <rect x="${x - 10}" y="${y - 24}" width="105" height="48" rx="10" fill="#0b1220" stroke="${border}" stroke-width="1.8" />
+        
+        <!-- LED Lamp Bulb -->
+        <circle cx="${x + 16}" cy="${y}" r="14" fill="${isHigh ? 'url(#led-on-grad)' : 'url(#led-off-grad)'}" stroke="${isHigh ? '#a7f3d0' : '#475569'}" stroke-width="2" filter="${isHigh ? 'url(#glow-high)' : 'none'}" />
+        <text x="${x + 16}" y="${y + 4.5}" text-anchor="middle" font-size="12" font-family="'JetBrains Mono', monospace" font-weight="900" fill="${isHigh ? '#022c22' : '#94a3b8'}">${val}</text>
+        
+        <!-- Output Name and State -->
+        <text x="${x + 42}" y="${y - 4}" font-size="12" font-family="'JetBrains Mono', monospace" font-weight="800" fill="#f8fafc">${name}</text>
+        <text x="${x + 42}" y="${y + 13}" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="800" fill="${isHigh ? '#35d07f' : '#64748b'}">${isHigh ? 'HIGH' : 'LOW'}</text>
+    </g>
+    `;
+}
+
+
+/* =========================================================
+   DIAGRAM LAYOUT ENGINES
+========================================================= */
+
+function renderVisualCircuit() {
+    if (!selectedSimulator) {
+        document.getElementById("circuitSvg").innerHTML = `
+            <text x="480" y="225" text-anchor="middle" fill="#64748b" font-size="14">
+                Select a circuit from the toolbar above to launch the visual simulator.
+            </text>
+        `;
+        document.getElementById("simSwitchesContainer").innerHTML = `
+            <div style="color:#64748b;font-size:12px;text-align:center;padding:24px 0">
+                Select a circuit to display input switches.
+            </div>
+        `;
+        document.getElementById("simTruthTableContent").innerHTML = `
+            <div style="color:#64748b;font-size:12px;text-align:center;padding:28px 0">
+                Select a circuit to display its synchronized truth table.
+            </div>
+        `;
+        document.getElementById("circuitFlow").textContent = "Select a circuit to view its execution flow.";
+        return;
+    }
+
+    // 1. Evaluate locally
+    const sim = evaluateCircuitLocally(selectedSimulator, currentInputs);
+
+    // 2. Update Header Info & Equations
+    const nameStr = formatName(selectedSimulator.name);
+    document.getElementById("simActiveCircuitName").textContent = nameStr;
+    const eqText = CIRCUIT_EQUATIONS[selectedSimulator.name] || generateFallbackEquation(selectedSimulator);
+    document.getElementById("circuitEquations").textContent = eqText;
+
+    const inpLen = selectedSimulator.inputs.length;
+    const gateLen = selectedSimulator.gates.length;
+    const outLen = selectedSimulator.outputs.length;
+    document.getElementById("simMetrics").textContent = `${inpLen} Inputs · ${gateLen} Gates · ${outLen} Outputs`;
+
+    // 3. Render Canvas Diagram
+    const svgEl = document.getElementById("circuitSvg");
+    let svgContent = buildSvgDefs();
+
+    if (selectedSimulator.name === "AND_Gate") {
+        svgEl.setAttribute("viewBox", "0 0 880 340");
+        svgContent += layoutAndGate(sim);
+    } else if (selectedSimulator.name === "Half_Adder") {
+        svgEl.setAttribute("viewBox", "0 0 920 400");
+        svgContent += layoutHalfAdder(sim);
+    } else if (selectedSimulator.name === "Full_Adder") {
+        svgEl.setAttribute("viewBox", "0 0 980 470");
+        svgContent += layoutFullAdder(sim);
+    } else if (selectedSimulator.name === "MUX_2_to_1") {
+        svgEl.setAttribute("viewBox", "0 0 940 430");
+        svgContent += layoutMux(sim);
+    } else {
+        // Any custom/saved circuit
+        svgEl.setAttribute("viewBox", "0 0 960 480");
+        svgContent += layoutGenericCircuit(selectedSimulator, sim);
+    }
+
+    svgEl.innerHTML = svgContent;
+
+    // 4. Update UI Panels
+    renderInputSwitchesList();
+    updateGateInspector(selectedSimulator, sim);
+    updateSimulationState(sim);
+    renderSynchronizedTruthTable(selectedSimulator, currentInputs);
+    renderCircuitFlow();
+}
+
+
+function generateFallbackEquation(circuit) {
+    if (!circuit || !circuit.outputs || !circuit.gates) return "--";
+    const parts = circuit.outputs.map(out => {
+        const g = circuit.gates.find(item => item.id === out.source);
+        if (g) {
+            return `${out.name} = ${g.type}(${g.inputs.join(", ")})`;
+        }
+        return `${out.name} = ${out.source}`;
+    });
+    return parts.join("  |  ");
+}
+
+
+/* Layout: AND Gate */
+function layoutAndGate(sim) {
+    const valA = sim.inputs["A"] || 0;
+    const valB = sim.inputs["B"] || 0;
+    const valOut = sim.outputs["OUT"] || 0;
+    const isSel = selectedGateId === "G1";
+
+    let html = "";
+
+    // Wires
+    html += drawOrthogonalWire([[108, 110], [360, 110], [360, 158], [400, 158]], valA);
+    html += drawOrthogonalWire([[108, 230], [360, 230], [360, 182], [400, 182]], valB);
+    html += drawOrthogonalWire([[480, 170], [710, 170]], valOut);
+
+    // Inputs
+    html += drawSvgSwitch("A", 60, 110, valA);
+    html += drawSvgSwitch("B", 60, 230, valB);
+
+    // Gate G1
+    html += drawLogicGate("AND", "G1", 440, 170, [valA, valB], valOut, isSel);
+
+    // Output
+    html += drawSvgProbe("OUT", 710, 170, valOut);
+
+    return html;
+}
+
+
+/* Layout: Half Adder */
+function layoutHalfAdder(sim) {
+    const valA = sim.inputs["A"] || 0;
+    const valB = sim.inputs["B"] || 0;
+    const valSum = sim.outputs["SUM"] || 0;
+    const valCarry = sim.outputs["CARRY"] || 0;
+
+    let html = "";
+
+    // A Wires & Junction
+    html += drawOrthogonalWire([[108, 110], [240, 110]], valA);
+    html += drawJunction(240, 110, valA);
+    html += drawOrthogonalWire([[240, 110], [410, 108]], valA);
+    html += drawOrthogonalWire([[240, 110], [240, 248], [410, 248]], valA);
+
+    // B Wires & Junction
+    html += drawOrthogonalWire([[108, 270], [300, 270]], valB);
+    html += drawJunction(300, 270, valB);
+    html += drawOrthogonalWire([[300, 270], [300, 132], [410, 132]], valB);
+    html += drawOrthogonalWire([[300, 270], [410, 272]], valB);
+
+    // Output Wires
+    html += drawOrthogonalWire([[490, 120], [740, 120]], valSum);
+    html += drawOrthogonalWire([[490, 260], [740, 260]], valCarry);
+
+    // Inputs
+    html += drawSvgSwitch("A", 60, 110, valA);
+    html += drawSvgSwitch("B", 60, 270, valB);
+
+    // Gates
+    html += drawLogicGate("XOR", "SUM", 450, 120, [valA, valB], valSum, selectedGateId === "SUM");
+    html += drawLogicGate("AND", "CARRY", 450, 260, [valA, valB], valCarry, selectedGateId === "CARRY");
+
+    // Outputs
+    html += drawSvgProbe("SUM", 740, 120, valSum);
+    html += drawSvgProbe("CARRY", 740, 260, valCarry);
+
+    return html;
+}
+
+
+/* Layout: Full Adder */
+function layoutFullAdder(sim) {
+    const valA = sim.inputs["A"] || 0;
+    const valB = sim.inputs["B"] || 0;
+    const valCin = sim.inputs["CIN"] || 0;
+
+    const valX1 = sim.intermediate["X1"] !== undefined ? sim.intermediate["X1"] : (valA ^ valB);
+    const valSum = sim.outputs["SUM"] || 0;
+    const valA1 = sim.intermediate["A1"] !== undefined ? sim.intermediate["A1"] : (valA & valB);
+    const valA2 = sim.intermediate["A2"] !== undefined ? sim.intermediate["A2"] : (valX1 & valCin);
+    const valCout = sim.outputs["COUT"] || 0;
+
+    let html = "";
+
+    // Input A Wires & Branch
+    html += drawOrthogonalWire([[108, 75], [190, 75]], valA);
+    html += drawJunction(190, 75, valA);
+    html += drawOrthogonalWire([[190, 75], [190, 83], [280, 83]], valA);
+    html += drawOrthogonalWire([[190, 75], [190, 338], [280, 338]], valA);
+
+    // Input B Wires & Branch
+    html += drawOrthogonalWire([[108, 155], [230, 155]], valB);
+    html += drawJunction(230, 155, valB);
+    html += drawOrthogonalWire([[230, 155], [230, 107], [280, 107]], valB);
+    html += drawOrthogonalWire([[230, 155], [230, 362], [280, 362]], valB);
+
+    // Input CIN Wires & Branch
+    html += drawOrthogonalWire([[108, 240], [450, 240]], valCin);
+    html += drawJunction(450, 240, valCin);
+    html += drawOrthogonalWire([[450, 240], [450, 137], [520, 137]], valCin);
+    html += drawOrthogonalWire([[450, 240], [450, 252], [520, 252]], valCin);
+
+    // X1 Output Wires & Branch
+    html += drawOrthogonalWire([[360, 95], [410, 95]], valX1);
+    html += drawJunction(410, 95, valX1);
+    html += drawOrthogonalWire([[410, 95], [410, 113], [520, 113]], valX1);
+    html += drawOrthogonalWire([[410, 95], [410, 228], [520, 228]], valX1);
+
+    // A1 Output Wire to COUT
+    html += drawOrthogonalWire([[360, 350], [700, 350], [700, 322], [740, 322]], valA1);
+
+    // A2 Output Wire to COUT
+    html += drawOrthogonalWire([[600, 240], [670, 240], [670, 298], [740, 298]], valA2);
+
+    // SUM Output Wire
+    html += drawOrthogonalWire([[600, 125], [830, 125]], valSum);
+
+    // COUT Output Wire
+    html += drawOrthogonalWire([[820, 310], [830, 310]], valCout);
+
+    // Switches
+    html += drawSvgSwitch("A", 60, 75, valA);
+    html += drawSvgSwitch("B", 60, 155, valB);
+    html += drawSvgSwitch("CIN", 60, 240, valCin);
+
+    // Gates
+    html += drawLogicGate("XOR", "X1", 320, 95, [valA, valB], valX1, selectedGateId === "X1");
+    html += drawLogicGate("AND", "A1", 320, 350, [valA, valB], valA1, selectedGateId === "A1");
+    html += drawLogicGate("XOR", "SUM", 560, 125, [valX1, valCin], valSum, selectedGateId === "SUM");
+    html += drawLogicGate("AND", "A2", 560, 240, [valX1, valCin], valA2, selectedGateId === "A2");
+    html += drawLogicGate("OR", "COUT", 780, 310, [valA2, valA1], valCout, selectedGateId === "COUT");
+
+    // Outputs
+    html += drawSvgProbe("SUM", 830, 125, valSum);
+    html += drawSvgProbe("COUT", 830, 310, valCout);
+
+    return html;
+}
+
+
+/* Layout: 2:1 Multiplexer */
+function layoutMux(sim) {
+    const valD0 = sim.inputs["D0"] || 0;
+    const valD1 = sim.inputs["D1"] || 0;
+    const valS = sim.inputs["S"] || 0;
+
+    const valNotS = sim.intermediate["NOT_S"] !== undefined ? sim.intermediate["NOT_S"] : (1 - valS);
+    const valA1 = sim.intermediate["A1"] !== undefined ? sim.intermediate["A1"] : (valD0 & valNotS);
+    const valA2 = sim.intermediate["A2"] !== undefined ? sim.intermediate["A2"] : (valD1 & valS);
+    const valOut = sim.outputs["OUT"] || 0;
+
+    let html = "";
+
+    // D0 Wire
+    html += drawOrthogonalWire([[108, 80], [470, 80], [470, 93]], valD0);
+
+    // S Wires & Branch
+    html += drawOrthogonalWire([[108, 195], [190, 195]], valS);
+    html += drawJunction(190, 195, valS);
+    html += drawOrthogonalWire([[190, 195], [190, 160], [250, 160]], valS);
+    html += drawOrthogonalWire([[190, 195], [190, 282], [470, 282]], valS);
+
+    // NOT_S Wire to A1
+    html += drawOrthogonalWire([[330, 160], [410, 160], [410, 117], [470, 117]], valNotS);
+
+    // D1 Wire to A2
+    html += drawOrthogonalWire([[108, 310], [410, 310], [410, 258], [470, 258]], valD1);
+
+    // A1 Wire to OR
+    html += drawOrthogonalWire([[550, 105], [630, 105], [630, 173], [690, 173]], valA1);
+
+    // A2 Wire to OR
+    html += drawOrthogonalWire([[550, 270], [630, 270], [630, 197], [690, 197]], valA2);
+
+    // OUT Wire
+    html += drawOrthogonalWire([[770, 185], [810, 185]], valOut);
+
+    // Switches
+    html += drawSvgSwitch("D0", 60, 80, valD0);
+    html += drawSvgSwitch("S", 60, 195, valS);
+    html += drawSvgSwitch("D1", 60, 310, valD1);
+
+    // Gates
+    html += drawLogicGate("NOT", "NOT_S", 290, 160, [valS], valNotS, selectedGateId === "NOT_S");
+    html += drawLogicGate("AND", "A1", 510, 105, [valD0, valNotS], valA1, selectedGateId === "A1");
+    html += drawLogicGate("AND", "A2", 510, 270, [valD1, valS], valA2, selectedGateId === "A2");
+    html += drawLogicGate("OR", "OUT", 730, 185, [valA1, valA2], valOut, selectedGateId === "OUT");
+
+    // Output Probe
+    html += drawSvgProbe("OUT", 810, 185, valOut);
+
+    return html;
+}
+
+
+/* Layout: Generic / Custom Arbitrary Circuit */
+function layoutGenericCircuit(circuit, sim) {
+    let html = "";
+    const inputs = circuit.inputs || [];
+    const gates = circuit.gates || [];
+    const outputs = circuit.outputs || [];
+
+    // Stage inputs on left
+    const inCount = inputs.length;
+    const inStep = 380 / (inCount + 1);
+    const inCoords = {};
+
+    inputs.forEach((inp, i) => {
+        const y = Math.round(40 + (i + 1) * inStep);
+        inCoords[inp] = { x: 108, y: y };
+        html += drawSvgSwitch(inp, 60, y, sim.inputs[inp] || 0);
+    });
+
+    // Stage gates in center columns
+    const gateCoords = {};
+    const gateCount = gates.length;
+    const cols = Math.min(3, Math.max(1, Math.ceil(gateCount / 2)));
+    const perCol = Math.ceil(gateCount / cols);
+
+    gates.forEach((gate, i) => {
+        const colIdx = Math.floor(i / perCol);
+        const rowIdx = i % perCol;
+        const x = 300 + colIdx * 200;
+        const y = 80 + rowIdx * 140;
+        gateCoords[gate.id] = { x, y };
+
+        const gateInVals = (gate.inputs || []).map(src => sim.signals[src] !== undefined ? sim.signals[src] : 0);
+        const gateOutVal = sim.signals[gate.id] !== undefined ? sim.signals[gate.id] : 0;
+        const isSel = selectedGateId === gate.id;
+
+        // Draw connecting wires from sources
+        (gate.inputs || []).forEach((src, sIdx) => {
+            const srcCoord = inCoords[src] || (gateCoords[src] ? { x: gateCoords[src].x + 40, y: gateCoords[src].y } : null);
+            if (srcCoord) {
+                const targetY = (gate.type === "NOT") ? y : (sIdx === 0 ? y - 12 : y + 12);
+                const val = sim.signals[src] !== undefined ? sim.signals[src] : 0;
+                html += drawOrthogonalWire([
+                    [srcCoord.x, srcCoord.y],
+                    [(srcCoord.x + x - 40) / 2, srcCoord.y],
+                    [(srcCoord.x + x - 40) / 2, targetY],
+                    [x - 40, targetY]
+                ], val);
+            }
+        });
+
+        html += drawLogicGate(gate.type, gate.id, x, y, gateInVals, gateOutVal, isSel);
+    });
+
+    // Outputs on right
+    const outCount = outputs.length;
+    const outStep = 380 / (outCount + 1);
+    outputs.forEach((out, i) => {
+        const y = Math.round(50 + (i + 1) * outStep);
+        const outVal = sim.outputs[out.name] || 0;
+        const srcCoord = gateCoords[out.source] ? { x: gateCoords[out.source].x + 40, y: gateCoords[out.source].y } : null;
+
+        if (srcCoord) {
+            html += drawOrthogonalWire([
+                [srcCoord.x, srcCoord.y],
+                [760, srcCoord.y],
+                [760, y],
+                [810, y]
+            ], outVal);
+        }
+        html += drawSvgProbe(out.name, 810, y, outVal);
+    });
+
+    return html;
+}
+
+
+/* =========================================================
+   INPUT SWITCHES LIST (HTML PANEL)
+========================================================= */
+
+function renderInputSwitchesList() {
+    const container = document.getElementById("simSwitchesContainer");
+    if (!container) return;
+
+    if (!selectedSimulator || !Array.isArray(selectedSimulator.inputs)) {
+        container.innerHTML = `
+            <div style="color:#64748b;font-size:12px;text-align:center;padding:24px 0">
+                Select a circuit to display input switches.
+            </div>
+        `;
+        return;
+    }
+
+    let html = "";
+    selectedSimulator.inputs.forEach(name => {
+        const val = currentInputs[name] !== undefined ? currentInputs[name] : 0;
+        const isOn = val === 1;
+
+        html += `
+        <div class="switch-row">
+            <div class="switch-label-col">
+                <span class="switch-name">INPUT ${name}</span>
+                <span class="switch-role">${name === 'CIN' ? 'Carry-In' : (name === 'S' ? 'Select Line' : 'Binary Input')}</span>
+            </div>
+
+            <div class="toggle-switch-btn ${isOn ? 'is-on' : ''}" onclick="toggleSimulatorInput('${name}')" title="Click to toggle Input ${name}">
+                <span class="toggle-switch-text">${isOn ? '1 HIGH' : '0 LOW'}</span>
+                <span class="toggle-switch-thumb">${val}</span>
+            </div>
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+
+/* =========================================================
+   GATE INSPECTOR PANEL
+========================================================= */
+
+function updateGateInspector(circuit, sim) {
+    const body = document.getElementById("gateInspectorBody");
+    const badge = document.getElementById("inspectorBadge");
+    if (!body || !badge) return;
+
+    if (!circuit || !selectedGateId) {
+        badge.textContent = "SELECT GATE";
+        body.innerHTML = `
+            <div class="inspector-empty">
+                <div style="font-size:26px;margin-bottom:8px">⎇</div>
+                Click any logic gate in the circuit diagram above to inspect its live signal values, truth table, and Boolean equation.
+            </div>
+        `;
+        return;
+    }
+
+    const gate = (circuit.gates || []).find(g => g.id === selectedGateId);
+    if (!gate) {
+        badge.textContent = "INSPECTOR";
+        body.innerHTML = `
+            <div class="inspector-empty">
+                Gate <strong>${selectedGateId}</strong> not found in this circuit.
+            </div>
+        `;
+        return;
+    }
+
+    badge.textContent = `${gate.id} · ${gate.type}`;
+
+    const gateInputs = (gate.inputs || []).map(src => {
+        const v = sim.signals[src] !== undefined ? sim.signals[src] : 0;
+        return { name: src, value: v };
+    });
+    const outVal = sim.signals[gate.id] !== undefined ? sim.signals[gate.id] : 0;
+
+    let equationStr = "";
+    const inNames = gateInputs.map(i => i.name).join(", ");
+    if (gate.type === "AND") equationStr = `${gate.id} = ${gateInputs.map(i => i.name).join(" · ")}`;
+    else if (gate.type === "OR") equationStr = `${gate.id} = ${gateInputs.map(i => i.name).join(" + ")}`;
+    else if (gate.type === "XOR") equationStr = `${gate.id} = ${gateInputs.map(i => i.name).join(" ⊕ ")}`;
+    else if (gate.type === "NOT") equationStr = `${gate.id} = (${gateInputs[0] ? gateInputs[0].name : 'A'})'`;
+    else if (gate.type === "NAND") equationStr = `${gate.id} = (${gateInputs.map(i => i.name).join(" · ")})'`;
+    else if (gate.type === "NOR") equationStr = `${gate.id} = (${gateInputs.map(i => i.name).join(" + ")})'`;
+    else if (gate.type === "XNOR") equationStr = `${gate.id} = (${gateInputs.map(i => i.name).join(" ⊕ ")})'`;
+    else equationStr = `${gate.id} = ${gate.type}(${inNames})`;
+
+    // Mini truth table
+    let miniTableHtml = "";
+    if (gate.type === "NOT") {
+        miniTableHtml = `
+            <div class="mini-table-wrap" style="margin-top:10px">
+                <table>
+                    <thead>
+                        <tr><th>${gateInputs[0] ? gateInputs[0].name : 'IN'}</th><th>${gate.id} (OUT)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="${gateInputs[0] && gateInputs[0].value === 0 ? 'active-gate-row' : ''}"><td>0</td><td style="color:#35d07f">1</td></tr>
+                        <tr class="${gateInputs[0] && gateInputs[0].value === 1 ? 'active-gate-row' : ''}"><td>1</td><td style="color:#8a95a9">0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } else {
+        const inA = gateInputs[0] ? gateInputs[0].name : 'IN1';
+        const inB = gateInputs[1] ? gateInputs[1].name : 'IN2';
+        const curA = gateInputs[0] ? gateInputs[0].value : 0;
+        const curB = gateInputs[1] ? gateInputs[1].value : 0;
+
+        const combinations = [
+            { a: 0, b: 0 },
+            { a: 0, b: 1 },
+            { a: 1, b: 0 },
+            { a: 1, b: 1 }
+        ];
+
+        let rowsHtml = "";
+        combinations.forEach(combo => {
+            const isMatch = (combo.a === curA && combo.b === curB);
+            let res = 0;
+            switch (gate.type) {
+                case "AND": res = combo.a & combo.b; break;
+                case "OR": res = combo.a | combo.b; break;
+                case "XOR": res = combo.a ^ combo.b; break;
+                case "NAND": res = 1 - (combo.a & combo.b); break;
+                case "NOR": res = 1 - (combo.a | combo.b); break;
+                case "XNOR": res = 1 - (combo.a ^ combo.b); break;
+            }
+
+            rowsHtml += `
+            <tr class="${isMatch ? 'active-gate-row' : ''}">
+                <td>${combo.a}</td>
+                <td>${combo.b}</td>
+                <td style="color:${res === 1 ? '#35d07f' : '#8a95a9'};font-weight:700">${res}</td>
+            </tr>
+            `;
+        });
+
+        miniTableHtml = `
+            <div class="mini-table-wrap" style="margin-top:10px">
+                <table>
+                    <thead>
+                        <tr><th>${inA}</th><th>${inB}</th><th>${gate.id}</th></tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    body.innerHTML = `
+        <div class="inspector-meta-grid">
+            <div class="inspector-chip">
+                <small>Gate Type</small>
+                <strong>${gate.type} Gate</strong>
+            </div>
+            <div class="inspector-chip">
+                <small>Current Output</small>
+                <strong style="color:${outVal === 1 ? '#35d07f' : '#94a3b8'}">${outVal} · ${outVal === 1 ? 'HIGH' : 'LOW'}</strong>
+            </div>
+        </div>
+
+        <div class="inspector-formula">
+            <span style="color:#64748b">LOGIC: </span>${equationStr}
+        </div>
+
+        <div style="font-size:10.5px;color:#64748b;font-weight:700;margin-top:6px;letter-spacing:0.8px">
+            INPUT SIGNALS: ${gateInputs.map(i => `<span style="color:${i.value === 1 ? '#35d07f' : '#94a3b8'};font-weight:800">${i.name} = ${i.value}</span>`).join(", ")}
+        </div>
+
+        ${miniTableHtml}
+    `;
+}
+
+
+/* =========================================================
+   SIMULATION STATE PANEL
+========================================================= */
+
+function updateSimulationState(sim) {
+    // 1. Input states
+    const inBox = document.getElementById("inputStateChips");
+    if (inBox) {
+        let html = "";
+        Object.entries(sim.inputs || {}).forEach(([k, v]) => {
+            const isHigh = v === 1;
+            html += `
+            <div class="sim-chip ${isHigh ? 'is-high' : ''}">
+                <span class="sim-chip-name">${k}</span>
+                <span class="sim-chip-val">${v}</span>
+            </div>
+            `;
+        });
+        inBox.innerHTML = html;
+    }
+
+    // 2. Intermediate states
+    const interBox = document.getElementById("intermediateStateChips");
+    if (interBox) {
+        let html = "";
+        Object.entries(sim.intermediate || {}).forEach(([k, v]) => {
+            const isHigh = v === 1;
+            html += `
+            <div class="sim-chip ${isHigh ? 'is-high' : ''}">
+                <span class="sim-chip-name">${k}</span>
+                <span class="sim-chip-val">${v}</span>
+            </div>
+            `;
+        });
+        interBox.innerHTML = html;
+    }
+
+    // 3. Final outputs
+    const outBox = document.getElementById("outputStateChips");
+    if (outBox) {
+        let html = "";
+        Object.entries(sim.outputs || {}).forEach(([k, v]) => {
+            const isHigh = v === 1;
+            html += `
+            <div class="sim-chip ${isHigh ? 'is-high' : ''}">
+                <span class="sim-chip-name">${k}</span>
+                <span class="sim-chip-val">${v}</span>
+            </div>
+            `;
+        });
+        outBox.innerHTML = html;
+    }
+}
+
+
+/* =========================================================
+   SYNCHRONIZED TRUTH TABLE
+========================================================= */
+
+function renderSynchronizedTruthTable(circuit, inputs) {
+    const container = document.getElementById("simTruthTableContent");
+    if (!container) return;
+
+    if (!circuit || !Array.isArray(circuit.inputs)) {
+        container.innerHTML = `
+            <div style="color:#64748b;font-size:12px;text-align:center;padding:28px 0">
+                Select a circuit to display its synchronized truth table.
+            </div>
+        `;
+        return;
+    }
+
+    const inputNames = circuit.inputs;
+    const totalCombinations = Math.pow(2, inputNames.length);
+    const rows = [];
+
+    for (let c = 0; c < totalCombinations; c++) {
+        const rowInputs = {};
+        for (let bit = 0; bit < inputNames.length; bit++) {
+            const shift = inputNames.length - 1 - bit;
+            rowInputs[inputNames[bit]] = (c >> shift) & 1;
+        }
+        const evalRes = evaluateCircuitLocally(circuit, rowInputs);
+        rows.push({
+            inputs: rowInputs,
+            outputs: evalRes.outputs
+        });
+    }
+
+    const outputNames = (circuit.outputs || []).map(o => o.name);
+
+    let html = `
+    <table>
+        <thead>
+            <tr>
+                <th style="width:60px">State</th>
+                ${inputNames.map(name => `<th>INPUT ${name}</th>`).join("")}
+                ${outputNames.map(name => `<th style="color:#38bdf8">OUT ${name}</th>`).join("")}
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    rows.forEach((row, idx) => {
+        let isMatch = true;
+        inputNames.forEach(inp => {
+            if (row.inputs[inp] !== (inputs[inp] || 0)) {
+                isMatch = false;
+            }
+        });
+
+        const activeCls = isMatch ? "active-truth-row" : "truth-interactive-row";
+        const indicator = isMatch ? `<span class="truth-active-tag">► ACTIVE</span>` : `<span style="color:#64748b">#${idx + 1}</span>`;
+        const encodedInputs = encodeURIComponent(JSON.stringify(row.inputs));
+
+        html += `<tr class="${activeCls}" onclick="applyTruthRowInputs('${encodedInputs}')" title="Click to test this input combination">`;
+        html += `<td>${indicator}</td>`;
+
+        inputNames.forEach(name => {
+            const val = row.inputs[name];
+            html += `<td class="${val === 1 ? 'bit-one' : 'bit-zero'}">${val}</td>`;
+        });
+
+        outputNames.forEach(name => {
+            const val = row.outputs[name];
+            html += `<td class="${val === 1 ? 'bit-one' : 'bit-zero'}">${val}</td>`;
+        });
+
+        html += `</tr>`;
+    });
+
+    html += `
+        </tbody>
+    </table>
+    `;
+
+    container.innerHTML = html;
+}
+
+
+function applyTruthRowInputs(encodedInputs) {
+    try {
+        const parsed = JSON.parse(decodeURIComponent(encodedInputs));
+        currentInputs = { ...parsed };
+        triggerPulseAnimation();
+        renderVisualCircuit();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+
+/* =========================================================
+   CIRCUIT FLOW
+========================================================= */
+
+function renderCircuitFlow() {
+    const container = document.getElementById("circuitFlow");
+    if (!container) return;
+
+    if (!selectedSimulator) {
+        container.textContent = "Select a circuit to view its structure.";
+        return;
+    }
+
+    let html = `<div class="flow">`;
+
+    selectedSimulator.inputs.forEach((input, index) => {
+        const val = currentInputs[input] || 0;
+        html += `
+            <div class="flow-node ${val === 1 ? 'gate' : ''}" style="${val === 1 ? 'border-color:#35d07f;color:#6ee79b' : ''}">
+                IN: <strong>${input}</strong> (${val})
+            </div>
+        `;
+        if (index < selectedSimulator.inputs.length - 1) {
+            html += `<div class="arrow">+</div>`;
+        }
+    });
+
+    html += `<div class="arrow">→</div>`;
+
+    selectedSimulator.gates.forEach((gate, index) => {
+        const outVal = evaluateCircuitLocally(selectedSimulator, currentInputs).signals[gate.id] || 0;
+        const isSel = selectedGateId === gate.id;
+
+        html += `
+            <div class="flow-node gate" onclick="selectGateToInspect('${gate.id}')" style="cursor:pointer;${isSel ? 'outline:2px solid #00f0ff;' : ''}${outVal === 1 ? 'box-shadow:0 0 10px rgba(53,208,127,0.3);' : ''}">
+                <strong>${gate.id}</strong> (${gate.type}) = <span style="color:${outVal === 1 ? '#35d07f' : '#8a95a9'}">${outVal}</span>
+            </div>
+        `;
+
+        if (index < selectedSimulator.gates.length - 1) {
+            html += `<div class="arrow">→</div>`;
+        }
+    });
+
+    html += `<div class="arrow">→</div>`;
+
+    selectedSimulator.outputs.forEach(output => {
+        const outVal = evaluateCircuitLocally(selectedSimulator, currentInputs).outputs[output.name] || 0;
+        html += `
+            <div class="flow-node" style="${outVal === 1 ? 'border-color:#35d07f;color:#6ee79b' : ''}">
+                OUT: <strong>${output.name}</strong> = ${outVal}
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+
+/* =========================================================
+   TRUTH TABLE SELECT
+========================================================= */
+
+function populateTruthSelect() {
+
+    const select =
+        document.getElementById("truthCircuit");
+
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML =
+        `<option value="">Select circuit</option>`;
+
+    samples.forEach((circuit, index) => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = index;
+
+        option.textContent =
+            formatName(circuit.name);
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================================
+   TRUTH TABLE
+========================================================= */
+
+async function generateTruthTable() {
+
+    const index =
+        document.getElementById("truthCircuit").value;
+
+    if (index === "") {
+
+        alert("Select a circuit first.");
+
+        return;
+    }
+
+    const circuit =
+        samples[Number(index)];
+
+    try {
+
+        const response =
+            await fetch(`${API}/api/truth-table`, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    circuit: circuit
+                })
+
+            });
+
+        const data =
+            await response.json();
+
+        renderTruthTable(data);
+
+    } catch (error) {
+
+        alert("Could not generate truth table.");
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER TRUTH TABLE
+========================================================= */
+
+function renderTruthTable(data) {
+
+    const container =
+        document.getElementById("truthResult");
+
+    if (!data.rows || !data.rows.length) {
+
+        container.innerHTML =
+            "No truth-table data.";
+
+        return;
+    }
+
+    const columns =
+        Object.keys(data.rows[0]);
+
+    let html = `
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            margin:20px 0 12px;
+        ">
+
+            <span style="color:#8b98ae;font-size:12px">
+                ${formatName(data.circuit)}
+            </span>
+
+            <span class="badge">
+                ${data.total_combinations} combinations
+            </span>
+
+        </div>
+
+        <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+    `;
+
+    columns.forEach(column => {
+
+        html += `<th>${column}</th>`;
+
+    });
+
+    html += `
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    data.rows.forEach(row => {
+
+        html += `<tr>`;
+
+        columns.forEach(column => {
+
+            const value = row[column];
+
+            const cls =
+                value === 1
+                    ? "bit-one"
+                    : "bit-zero";
+
+            html += `
+                <td class="${cls}">
+                    ${value}
+                </td>
+            `;
+
+        });
+
+        html += `</tr>`;
+
+    });
+
+    html += `
+            </tbody>
+        </table>
+
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+
+/* =========================================================
+   SAVE SAMPLE CIRCUITS
+========================================================= */
+
+async function saveSamples() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/api/samples/save`, {
+                method: "POST"
+            });
+
+        const data =
+            await response.json();
+
+        alert(
+            `${data.count} sample circuits saved successfully.`
+        );
+
+        loadRepository();
+
+    } catch (error) {
+
+        alert("Could not save sample circuits.");
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD SAVED CIRCUIT
+========================================================= */
+
+async function loadSavedCircuit(name) {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/api/circuits/${encodeURIComponent(name)}`
+            );
+
+        const circuit =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                circuit.detail || "Circuit not found."
+            );
+
+        }
+
+        selectedSimulator = circuit;
+        initCircuitInputs(circuit);
+
+        showPageByName("simulator");
+
+        const select =
+            document.getElementById("simCircuit");
+        if (select) {
+            select.innerHTML =
+                `<option value="">Saved: ${formatName(circuit.name)}</option>`;
+        }
+
+        renderVisualCircuit();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* =========================================================
+   START APPLICATION
+========================================================= */
+
+async function startApplication() {
+
+    await checkHealth();
+
+    await loadSamples();
+
+    await loadRepository();
+
+}
+
+
+/* START */
+
+startApplication();
+
+</script>
+
+</body>
+</html>
