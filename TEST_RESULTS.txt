@@ -1,0 +1,59 @@
+PROGRAMMABLE LOGIC CIRCUIT REPOSITORY
+AUTOMATED TEST RESULTS
+=====================================
+
+Test Date: 17-09-2026
+
+NORMAL TEST CASES
+-----------------
+Total: 12
+Passed: 12
+Failed: 0
+
+EDGE / FAULT TEST CASES
+-----------------------
+Total: 6
+Passed: 6
+Failed: 0
+
+FINAL SUMMARY
+-------------
+Total Test Cases : 18
+Normal Cases     : 12
+Fault Cases      : 6
+Total Passed     : 18
+Total Failed     : 0
+
+OVERALL STATUS   : ALL TESTS PASSED
+
+
+FAULT VALIDATION
+----------------
+F01 - Missing input value
+      Detected: Missing input value: B
+
+F02 - Invalid input value
+      Detected: Input A must be 0 or 1.
+
+F03 - Unknown signal reference
+      Detected: Unknown signal 'UNKNOWN' used by gate 'G1'.
+
+F04 - Unsupported gate
+      Detected: Unsupported gate: INVALID_GATE
+
+F05 - Wrong gate input count
+      Detected: AND gate requires exactly two inputs.
+
+F06 - Duplicate gate ID
+      Detected: Duplicate gate id: G1
+
+
+SUPPORTED LOGIC GATES
+---------------------
+AND
+OR
+NOT
+NAND
+NOR
+XOR
+XNOR
