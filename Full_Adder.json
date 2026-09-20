@@ -1,0 +1,60 @@
+{
+    "name": "Full_Adder",
+    "inputs": [
+        "A",
+        "B",
+        "CIN"
+    ],
+    "gates": [
+        {
+            "id": "X1",
+            "type": "XOR",
+            "inputs": [
+                "A",
+                "B"
+            ]
+        },
+        {
+            "id": "SUM",
+            "type": "XOR",
+            "inputs": [
+                "X1",
+                "CIN"
+            ]
+        },
+        {
+            "id": "A1",
+            "type": "AND",
+            "inputs": [
+                "A",
+                "B"
+            ]
+        },
+        {
+            "id": "A2",
+            "type": "AND",
+            "inputs": [
+                "X1",
+                "CIN"
+            ]
+        },
+        {
+            "id": "COUT",
+            "type": "OR",
+            "inputs": [
+                "A1",
+                "A2"
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "SUM",
+            "source": "SUM"
+        },
+        {
+            "name": "COUT",
+            "source": "COUT"
+        }
+    ]
+}

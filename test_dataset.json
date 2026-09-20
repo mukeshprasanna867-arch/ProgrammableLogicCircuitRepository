@@ -1,0 +1,119 @@
+{
+  "project": "Programmable Logic Circuit Repository",
+  "description": "Test dataset for validating digital logic circuits.",
+  "input_convention": {
+    "0": "LOW",
+    "1": "HIGH"
+  },
+  "normal_test_cases": [
+    {
+      "id": "N01",
+      "type": "AND",
+      "inputs": [0, 0],
+      "expected_output": 0
+    },
+    {
+      "id": "N02",
+      "type": "AND",
+      "inputs": [0, 1],
+      "expected_output": 0
+    },
+    {
+      "id": "N03",
+      "type": "AND",
+      "inputs": [1, 0],
+      "expected_output": 0
+    },
+    {
+      "id": "N04",
+      "type": "AND",
+      "inputs": [1, 1],
+      "expected_output": 1
+    },
+    {
+      "id": "N05",
+      "type": "OR",
+      "inputs": [0, 0],
+      "expected_output": 0
+    },
+    {
+      "id": "N06",
+      "type": "OR",
+      "inputs": [0, 1],
+      "expected_output": 1
+    },
+    {
+      "id": "N07",
+      "type": "OR",
+      "inputs": [1, 0],
+      "expected_output": 1
+    },
+    {
+      "id": "N08",
+      "type": "OR",
+      "inputs": [1, 1],
+      "expected_output": 1
+    },
+    {
+      "id": "N09",
+      "type": "XOR",
+      "inputs": [0, 1],
+      "expected_output": 1
+    },
+    {
+      "id": "N10",
+      "type": "XOR",
+      "inputs": [1, 1],
+      "expected_output": 0
+    },
+    {
+      "id": "N11",
+      "type": "NOT",
+      "inputs": [0],
+      "expected_output": 1
+    },
+    {
+      "id": "N12",
+      "type": "NOT",
+      "inputs": [1],
+      "expected_output": 0
+    }
+  ],
+  "fault_test_cases": [
+    {
+      "id": "F01",
+      "type": "missing_input",
+      "description": "Required circuit input is missing."
+    },
+    {
+      "id": "F02",
+      "type": "invalid_input",
+      "description": "Input contains a value other than 0 or 1."
+    },
+    {
+      "id": "F03",
+      "type": "unknown_signal",
+      "description": "Gate refers to a signal that does not exist."
+    },
+    {
+      "id": "F04",
+      "type": "unsupported_gate",
+      "description": "Circuit contains an unsupported gate type."
+    },
+    {
+      "id": "F05",
+      "type": "wrong_input_count",
+      "description": "Gate receives an incorrect number of inputs."
+    },
+    {
+      "id": "F06",
+      "type": "duplicate_gate_id",
+      "description": "Two gates use the same gate identifier."
+    }
+  ],
+  "summary": {
+    "normal_cases": 12,
+    "fault_cases": 6,
+    "total_cases": 18
+  }
+}

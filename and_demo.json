@@ -1,0 +1,23 @@
+{
+    "name": "and_demo",
+    "inputs": [
+        "A",
+        "B"
+    ],
+    "gates": [
+        {
+            "id": "G1",
+            "type": "AND",
+            "inputs": [
+                "A",
+                "B"
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "OUT",
+            "source": "G1"
+        }
+    ]
+}

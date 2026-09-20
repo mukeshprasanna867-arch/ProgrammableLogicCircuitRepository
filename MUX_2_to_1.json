@@ -1,0 +1,47 @@
+{
+    "name": "MUX_2_to_1",
+    "inputs": [
+        "D0",
+        "D1",
+        "S"
+    ],
+    "gates": [
+        {
+            "id": "NOT_S",
+            "type": "NOT",
+            "inputs": [
+                "S"
+            ]
+        },
+        {
+            "id": "A1",
+            "type": "AND",
+            "inputs": [
+                "D0",
+                "NOT_S"
+            ]
+        },
+        {
+            "id": "A2",
+            "type": "AND",
+            "inputs": [
+                "D1",
+                "S"
+            ]
+        },
+        {
+            "id": "OUT",
+            "type": "OR",
+            "inputs": [
+                "A1",
+                "A2"
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "OUT",
+            "source": "OUT"
+        }
+    ]
+}
